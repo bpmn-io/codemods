@@ -6,6 +6,10 @@ All notable changes to [@bpmn-io/codemod](https://github.com/bpmn-io/codemod) ar
 
 ___Note:__ Yet to be released changes appear here._
 
+## 0.2.1
+
+* `CHORE`: correct package repository
+
 ## 0.2.0
 
 * `FEAT`: add ability to limit `esm` transform to certain packages ([#3](https://github.com/bpmn-io/codemods/pull/3))
