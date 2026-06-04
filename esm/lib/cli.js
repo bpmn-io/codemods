@@ -9,8 +9,10 @@ native ES module resolution (e.g. when migrating to a package that ships
 "ESM only", such as diagram-js).
 
 Options:
-  -d, --dry-run   Report changes without writing files
-  -h, --help      Show this help
+  -p, --package <name>   Only rewrite imports of this package (repeatable);
+                         when given, relative and other packages are left alone
+  -d, --dry-run          Report changes without writing files
+  -h, --help             Show this help
 
 Exit code is 1 when any import could not be resolved.
 `;
@@ -21,21 +23,73 @@ Exit code is 1 when any import could not be resolved.
  * @param {string[]} argv - arguments after the mod name
  */
 export function run(argv) {
-  const dryRun = argv.includes('--dry-run') || argv.includes('-d');
-  const help = argv.includes('--help') || argv.includes('-h');
+  let options;
+
+  try {
+    options = parseArgs(argv);
+  } catch (error) {
+    process.stderr.write(`${error.message}\n\n${HELP}`);
+    process.exitCode = 1;
+    return;
+  }
+
+  const { help, dryRun, packages, target } = options;
 
   if (help) {
     process.stdout.write(HELP);
     return;
   }
 
-  const target = argv.find((arg) => !arg.startsWith('-')) || process.cwd();
-
-  const report = migrate(target, { dryRun });
+  const report = migrate(target, { dryRun, packages });
 
   print(report, dryRun);
 
   process.exitCode = report.unresolved.length || report.errors.length ? 1 : 0;
+}
+
+/**
+ * Parse the `esm` mod CLI arguments.
+ *
+ * @param {string[]} argv
+ *
+ * @return {{ help: boolean, dryRun: boolean, packages: string[], target: string }}
+ *
+ * @throws {Error} on invalid usage, e.g. a `--package` without a name
+ */
+export function parseArgs(argv) {
+  const options = { help: false, dryRun: false, packages: [], target: null };
+
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i];
+
+    if (arg === '--help' || arg === '-h') {
+      options.help = true;
+    } else if (arg === '--dry-run' || arg === '-d') {
+      options.dryRun = true;
+    } else if (arg === '--package' || arg === '-p') {
+      options.packages.push(requirePackage(arg, argv[++i]));
+    } else if (arg.startsWith('--package=')) {
+      options.packages.push(requirePackage('--package', arg.slice('--package='.length)));
+    } else if (!arg.startsWith('-') && options.target === null) {
+      options.target = arg;
+    }
+  }
+
+  options.target = options.target || process.cwd();
+
+  return options;
+}
+
+/**
+ * Guard against a `--package` option that is missing its value or accidentally
+ * swallowed a following flag (e.g. `-p -d`).
+ */
+function requirePackage(flag, value) {
+  if (!value || value.startsWith('-')) {
+    throw new Error(`Option ${flag} requires a package name, got: ${value ?? '(none)'}`);
+  }
+
+  return value;
 }
 
 function print(report, dryRun) {

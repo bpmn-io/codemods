@@ -23,10 +23,18 @@ npx @bpmn-io/codemods esm <dir|file>
 
 # preview without writing
 npx @bpmn-io/codemods esm --dry-run src
+
+# only rewrite imports of specific packages
+npx @bpmn-io/codemods esm src --package diagram-js --package bpmn-js
 ```
 
 Run it from your project root so that `node_modules` (the installed,
 already-migrated package) is reachable for resolution.
+
+When one or more `--package` (`-p`) options are given, only imports of those
+packages are rewritten — relative imports and imports of other packages are
+left untouched (and not reported as unresolved). This is useful for migrating
+one dependency at a time, e.g. when only `diagram-js` has gone "ESM only".
 
 The command exits with code `1` if any import could not be resolved, so it can
 be used as a CI guard.
@@ -36,17 +44,17 @@ be used as a CI guard.
 For every `.js`, `.jsx`, `.mjs`, `.cjs`, `.ts` and `.tsx` file below the target
 (ignoring `node_modules` and `.git`):
 
-1. Each static `import` / `export ... from` source, and every dynamic
-   `import('...')` call with a string-literal argument, is checked against ES
-   module resolution.
-2. If the specifier does not resolve as written but does once an extension is
+1. Collect static `import` / `export ... from` source, and every dynamic
+   `import('...')` call with a string-literal argument - filter by (optional) `package` filters
+2. Matching imports are checked against ES module resolution.
+3. If the specifier does not resolve as written but does once an extension is
    appended, the extension is added.
    - Relative and bare (`node_modules`) specifiers are both handled.
    - TypeScript / JSX sources are written with a `.js` specifier (NodeNext
      convention), even though the file on disk is `.ts`/`.tsx`.
-3. Specifiers that already carry an extension, and bare package roots
+4. Specifiers that already carry an extension, and bare package roots
    (e.g. `diagram-js`, `react`), are left untouched.
-4. Anything that still cannot be resolved (e.g. a directory import that would
+5. Anything that still cannot be resolved (e.g. a directory import that would
    need `/index.js`, or a genuinely missing file) is **reported** for manual
    review — never silently changed.
 

@@ -43,6 +43,30 @@ describe('transform', function() {
   });
 
 
+  it('should only rewrite targeted packages when a filter is given', function() {
+
+    // given
+    const code = [
+      "import { getParents } from 'diagram-js/lib/util/Elements';",
+      "import { help } from './helper';",
+      "import { gone } from './does-not-exist';"
+    ].join('\n');
+
+    // when
+    const result = transform(code, indexFile, { packages: [ 'diagram-js' ] });
+
+    // then
+    expect(result.code).to.equal([
+      "import { getParents } from 'diagram-js/lib/util/Elements.js';",
+      "import { help } from './helper';",
+      "import { gone } from './does-not-exist';"
+    ].join('\n'));
+
+    // does-not-exist is not reported, it is not a targeted package
+    expect(result.unresolved).to.be.empty;
+  });
+
+
   it('should preserve the original quote style', function() {
 
     // given

@@ -13,6 +13,7 @@ import { resolveImport } from './resolve.js';
  *
  * @param {string} code - the file contents
  * @param {string} filename - absolute path of the file (used for resolution)
+ * @param {{ packages?: string[] }} [options] - passed through to the resolver
  *
  * @return {{
  *   code: string,
@@ -22,7 +23,7 @@ import { resolveImport } from './resolve.js';
  *   error: (Error|null)
  * }}
  */
-export function transform(code, filename) {
+export function transform(code, filename, options = {}) {
   let ast;
 
   try {
@@ -40,7 +41,7 @@ export function transform(code, filename) {
   const unresolved = [];
 
   for (const source of importSources(ast)) {
-    const result = resolveImport(source.value, filename);
+    const result = resolveImport(source.value, filename, options);
     const line = source.loc.start.line;
 
     if (result.status === 'rewrite') {

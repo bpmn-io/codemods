@@ -22,12 +22,13 @@ const IGNORED_DIRECTORIES = new Set([ 'node_modules', '.git' ]);
  * under native ES module resolution.
  *
  * @param {string} target - directory or file to migrate
- * @param {{ dryRun?: boolean }} [options]
+ * @param {{ dryRun?: boolean, packages?: string[] }} [options] - when
+ *   `packages` is non-empty, only imports of those packages are rewritten
  *
  * @return {Report}
  */
 export function migrate(target, options = {}) {
-  const { dryRun = false } = options;
+  const { dryRun = false, packages = [] } = options;
 
   const report = {
     filesScanned: 0,
@@ -42,7 +43,7 @@ export function migrate(target, options = {}) {
     report.filesScanned++;
 
     const code = fs.readFileSync(file, 'utf8');
-    const result = transform(code, file);
+    const result = transform(code, file, { packages });
 
     if (result.error) {
       report.errors.push({ file, message: result.error.message });

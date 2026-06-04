@@ -57,6 +57,27 @@ describe('migrate', function() {
   });
 
 
+  it('should only rewrite the given packages', function() {
+
+    // given
+    const dir = copyFixture();
+
+    // when
+    const report = migrate(dir, { packages: [ 'diagram-js' ] });
+
+    // then
+    const index = fs.readFileSync(path.join(dir, 'src', 'index.js'), 'utf8');
+
+    // diagram-js rewritten, relative imports left untouched
+    expect(index).to.contain("'diagram-js/lib/util/Elements.js'");
+    expect(index).to.contain("from './helper'");
+    expect(index).to.contain("import('./helper')");
+
+    // non-targeted imports are not reported as unresolved
+    expect(report.unresolved).to.be.empty;
+  });
+
+
   it('should not descend into node_modules', function() {
 
     // when
