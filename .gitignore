@@ -1,0 +1,2 @@
+# root install only — fixture node_modules are committed on purpose
+/node_modules
