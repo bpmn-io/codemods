@@ -1,0 +1,32 @@
+{
+  "name": "@bpmn-io/codemods",
+  "version": "0.0.0",
+  "description": "A collection of codemods for the bpmn.io ecosystem.",
+  "type": "module",
+  "bin": {
+    "codemods": "bin/codemods.js"
+  },
+  "scripts": {
+    "all": "npm run test",
+    "test": "mocha"
+  },
+  "files": [
+    "bin",
+    "esm/lib",
+    "esm/README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.24.0"
+  },
+  "devDependencies": {
+    "chai": "^5.1.0",
+    "mocha": "^10.4.0"
+  }
+}
