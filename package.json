@@ -40,7 +40,7 @@
     "@babel/parser": "^7.24.0"
   },
   "devDependencies": {
-    "chai": "^5.1.0",
-    "mocha": "^10.4.0"
+    "chai": "^6.2.2",
+    "mocha": "^11.7.6"
   }
 }
