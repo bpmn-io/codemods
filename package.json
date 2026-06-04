@@ -6,6 +6,20 @@
   "bin": {
     "codemods": "bin/codemods.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bpmn-io/diagram-js"
+  },
+  "author": {
+    "name": "Nico Rehwaldt",
+    "url": "https://github.com/nikku"
+  },
+  "contributors": [
+    {
+      "name": "bpmn.io contributors",
+      "url": "https://github.com/bpmn-io"
+    }
+  ],
   "scripts": {
     "all": "npm run test",
     "test": "mocha"
