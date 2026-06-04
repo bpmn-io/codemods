@@ -98,4 +98,57 @@ describe('resolve - resolveImport', function() {
     expect(result.status).to.equal('unresolved');
   });
 
+
+  describe('package filter', function() {
+
+    it('should rewrite imports of a targeted package', function() {
+
+      // when
+      const result = resolveImport(
+        'diagram-js/lib/util/Elements', fromFile, { packages: [ 'diagram-js' ] }
+      );
+
+      // then
+      expect(result).to.eql({
+        status: 'rewrite',
+        specifier: 'diagram-js/lib/util/Elements.js'
+      });
+    });
+
+
+    it('should skip imports of a non-targeted package', function() {
+
+      // when
+      const result = resolveImport(
+        'diagram-js/lib/util/Elements', fromFile, { packages: [ 'bpmn-js' ] }
+      );
+
+      // then
+      expect(result.status).to.equal('skip');
+    });
+
+
+    it('should skip relative imports when a filter is given', function() {
+
+      // when
+      const result = resolveImport('./helper', fromFile, { packages: [ 'diagram-js' ] });
+
+      // then
+      expect(result.status).to.equal('skip');
+    });
+
+
+    it('should match the package exactly, not by prefix', function() {
+
+      // when
+      const result = resolveImport(
+        'diagram-js-direction/lib/x', fromFile, { packages: [ 'diagram-js' ] }
+      );
+
+      // then
+      expect(result.status).to.equal('skip');
+    });
+
+  });
+
 });

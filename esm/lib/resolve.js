@@ -47,13 +47,20 @@ const BARE_CANDIDATES = [
  *
  * @param {string} specifier - the raw import source, e.g. `diagram-js/lib/util/Elements`
  * @param {string} fromFile - absolute path of the importing file
+ * @param {{ packages?: string[] }} [options] - if `packages` is non-empty, only
+ *   imports of those packages are considered; everything else is skipped
  *
  * @return {{ status: ('skip'|'rewrite'|'unresolved'), specifier: string }}
- *   `skip` if already resolvable, `rewrite` with the new specifier if an
+ *   `skip` if already resolvable or filtered out by `options.packages`, `rewrite` with the new specifier if an
  *   extension was appended, `unresolved` if no `.js`-style extension resolves.
  */
-export function resolveImport(specifier, fromFile) {
+export function resolveImport(specifier, fromFile, options = {}) {
   const bare = isBare(specifier);
+
+  // when restricted to specific packages, only their (bare) imports apply
+  if (options.packages && options.packages.length && !targetsPackage(specifier, bare, options.packages)) {
+    return { status: 'skip', specifier };
+  }
 
   // bare package roots (e.g. 'react', 'diagram-js') resolve via main/exports
   if (bare && isBareRoot(specifier)) {
@@ -151,6 +158,13 @@ function isBare(specifier) {
 
 function isBareRoot(specifier) {
   return parseBare(specifier).subpath === '';
+}
+
+/**
+ * Whether the specifier imports from one of the given packages.
+ */
+function targetsPackage(specifier, bare, packages) {
+  return bare && packages.includes(parseBare(specifier).pkg);
 }
 
 function specifierExtension(specifier) {
