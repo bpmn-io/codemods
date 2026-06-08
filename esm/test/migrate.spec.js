@@ -43,6 +43,7 @@ describe('migrate', function() {
 
     expect(index).to.contain("'diagram-js/lib/util/Elements.js'");
     expect(index).to.contain("'./helper.js'");
+    expect(index).to.contain("'./lib/index.js'");
     expect(index).to.contain("import('./helper.js')");
     expect(index).to.contain("'./does-not-exist'");
     expect(index).to.contain("'diagram-js'");
