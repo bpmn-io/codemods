@@ -6,6 +6,10 @@ All notable changes to [@bpmn-io/codemod](https://github.com/bpmn-io/codemod) ar
 
 ___Note:__ Yet to be released changes appear here._
 
+## 0.3.0
+
+* `FEAT`: allow `esm` to rewrite relative directory imports ([#4](https://github.com/bpmn-io/codemods/pull/4))
+
 ## 0.2.1
 
 * `CHORE`: correct package repository
