@@ -1,6 +1,6 @@
 {
   "name": "@bpmn-io/codemods",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "A collection of codemods for the bpmn.io ecosystem.",
   "type": "module",
   "bin": {
