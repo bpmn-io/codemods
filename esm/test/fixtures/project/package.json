@@ -1,0 +1,11 @@
+{
+  "name": "test-project",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    "./export": "./src/export.js"
+  },
+  "dependencies": {
+    "diagram-js": "*"
+  }
+}

@@ -48,6 +48,7 @@ describe('migrate', function() {
     expect(index).to.contain("'./does-not-exist'");
     expect(index).to.contain("'diagram-js'");
     expect(index).to.contain("'diagram-js/lib/core'");
+    expect(index).to.contain("'test-project/export'");
 
     expect(report.unresolved).to.eql([
       {

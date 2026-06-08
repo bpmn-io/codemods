@@ -125,6 +125,19 @@ describe('resolve - resolveImport', function() {
   });
 
 
+  it('should skip a self-referencing package subpath covered by own exports', function() {
+
+    // given
+    // the fixture package.json has name "test-project" and exports "./export"
+
+    // when
+    const result = resolveImport('test-project/export', fromFile);
+
+    // then
+    expect(result.status).to.equal('skip');
+  });
+
+
   describe('package filter', function() {
 
     it('should rewrite imports of a targeted package', function() {

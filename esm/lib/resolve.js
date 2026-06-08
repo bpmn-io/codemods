@@ -130,7 +130,8 @@ function resolveCandidates(basePath, specifier, candidates) {
 
 /**
  * Locate a package directory by walking up the `node_modules` chain, starting
- * from the importing file's directory.
+ * from the importing file's directory. Also handles self-referencing: if a
+ * directory's own `package.json` names the package, that directory is returned.
  */
 function findPackageDir(pkg, fromDir) {
   let dir = fromDir;
@@ -140,6 +141,10 @@ function findPackageDir(pkg, fromDir) {
 
     if (isDirectory(candidate)) {
       return candidate;
+    }
+
+    if (readJson(path.join(dir, 'package.json'))?.name === pkg) {
+      return dir;
     }
 
     const parent = path.dirname(dir);

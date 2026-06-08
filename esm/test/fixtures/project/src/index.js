@@ -7,6 +7,8 @@ import Diagram from 'diagram-js';
 import './style.css';
 import { libHelper } from './lib';
 
+export { exported } from 'test-project/export';
+
 export const lazy = () => import('./helper');
 
 export { getParents, help, gone, nope, coreModule, Diagram, libHelper };
