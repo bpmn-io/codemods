@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "type": "module",
   "exports": {
-    "./export": "./src/export.js"
+    "./export": "./src/export.js",
+    "./src/*": "./src/*"
   },
   "dependencies": {
     "diagram-js": "*"

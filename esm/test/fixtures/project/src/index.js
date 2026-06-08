@@ -9,6 +9,8 @@ import { libHelper } from './lib';
 
 export { exported } from 'test-project/export';
 
+export { libHelper as helper } from 'test-project/src/lib';
+
 export const lazy = () => import('./helper');
 
 export { getParents, help, gone, nope, coreModule, Diagram, libHelper };

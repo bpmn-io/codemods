@@ -115,7 +115,20 @@ function resolveBare(specifier, fromFile) {
     return null;
   }
 
-  return resolveCandidates(path.join(pkgDir, subpath), specifier, BARE_CANDIDATES);
+  const basePath = path.join(pkgDir, subpath);
+
+  const direct = resolveCandidates(basePath, specifier, BARE_CANDIDATES);
+  if (direct) return direct;
+
+  if (isDirectory(basePath)) {
+    return resolveCandidates(
+      path.join(basePath, 'index'),
+      specifier + '/index',
+      BARE_CANDIDATES
+    );
+  }
+
+  return null;
 }
 
 function resolveCandidates(basePath, specifier, candidates) {
@@ -239,11 +252,20 @@ function isSubpathExported(specifier, fromFile) {
 
   if (key in exports) return true;
 
-  for (const pattern of Object.keys(exports)) {
-    if (pattern.includes('*')) {
-      const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '(.*)');
-      if (new RegExp('^' + escaped + '$').test(key)) return true;
+  for (const [ pattern, valueTemplate ] of Object.entries(exports)) {
+    if (!pattern.includes('*') || typeof valueTemplate !== 'string') {
+      continue;
     }
+
+    const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '(.*)');
+    const match = new RegExp('^' + escaped + '$').exec(key);
+
+    if (!match) continue;
+
+    // wildcard matched: only treat as already-valid if the resolved target
+    // is an actual file — a directory target still needs rewriting to index.js
+    const resolved = valueTemplate.replace(/\*/g, match[1]);
+    if (isFile(path.join(pkgDir, resolved))) return true;
   }
 
   return false;

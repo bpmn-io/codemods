@@ -138,6 +138,19 @@ describe('resolve - resolveImport', function() {
   });
 
 
+  it('should rewrite a self-referencing directory import to index.js', function() {
+
+    // given
+    // the fixture package.json has name "test-project"; src/lib/index.js exists
+
+    // when
+    const result = resolveImport('test-project/src/lib', fromFile);
+
+    // then
+    expect(result).to.eql({ status: 'rewrite', specifier: 'test-project/src/lib/index.js' });
+  });
+
+
   describe('package filter', function() {
 
     it('should rewrite imports of a targeted package', function() {

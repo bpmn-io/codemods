@@ -49,6 +49,7 @@ describe('migrate', function() {
     expect(index).to.contain("'diagram-js'");
     expect(index).to.contain("'diagram-js/lib/core'");
     expect(index).to.contain("'test-project/export'");
+    expect(index).to.contain("'test-project/src/lib/index.js'");
 
     expect(report.unresolved).to.eql([
       {
