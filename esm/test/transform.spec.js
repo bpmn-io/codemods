@@ -43,6 +43,20 @@ describe('transform', function() {
   });
 
 
+  it('should rewrite a directory import to index.js', function() {
+
+    // given
+    const code = "import { libHelper } from './lib';";
+
+    // when
+    const result = transform(code, indexFile);
+
+    // then
+    expect(result.code).to.equal("import { libHelper } from './lib/index.js';");
+    expect(result.changed).to.be.true;
+  });
+
+
   it('should only rewrite targeted packages when a filter is given', function() {
 
     // given
