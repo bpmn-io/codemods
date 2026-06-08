@@ -48,11 +48,16 @@ describe('migrate', function() {
     expect(index).to.contain("'./does-not-exist'");
     expect(index).to.contain("'diagram-js'");
 
-    expect(report.unresolved).to.deep.include.members([
+    expect(report.unresolved).to.eql([
       {
         file: path.join(dir, 'src', 'index.js'),
         specifier: './does-not-exist',
         line: 3
+      },
+      {
+        file: path.join(dir, 'src', 'index.js'),
+        specifier: 'diagram-js/lib/does-not-exist',
+        line: 4
       }
     ]);
   });
@@ -75,7 +80,13 @@ describe('migrate', function() {
     expect(index).to.contain("import('./helper')");
 
     // non-targeted imports are not reported as unresolved
-    expect(report.unresolved).to.be.empty;
+    expect(report.unresolved).to.eql([
+      {
+        file: path.join(dir, 'src', 'index.js'),
+        specifier: 'diagram-js/lib/does-not-exist',
+        line: 4
+      }
+    ]);
   });
 
 

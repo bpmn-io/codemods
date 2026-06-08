@@ -1,10 +1,11 @@
 import { getParents } from 'diagram-js/lib/util/Elements';
 import { help } from './helper';
 import { gone } from './does-not-exist';
+import { nope } from 'diagram-js/lib/does-not-exist';
 import Diagram from 'diagram-js';
 import './style.css';
 import { libHelper } from './lib';
 
 export const lazy = () => import('./helper');
 
-export { getParents, help, gone, Diagram, libHelper };
+export { getParents, help, gone, nope, Diagram, libHelper };
