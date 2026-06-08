@@ -47,6 +47,7 @@ describe('migrate', function() {
     expect(index).to.contain("import('./helper.js')");
     expect(index).to.contain("'./does-not-exist'");
     expect(index).to.contain("'diagram-js'");
+    expect(index).to.contain("'diagram-js/lib/core'");
 
     expect(report.unresolved).to.eql([
       {
@@ -74,8 +75,13 @@ describe('migrate', function() {
     // then
     const index = fs.readFileSync(path.join(dir, 'src', 'index.js'), 'utf8');
 
-    // diagram-js rewritten, relative imports left untouched
+    // diagram-js rewritten
     expect(index).to.contain("'diagram-js/lib/util/Elements.js'");
+
+    // diagram-js module imports untouched
+    expect(index).to.contain("'diagram-js/lib/core'");
+
+    // relative imports left untouched
     expect(index).to.contain("from './helper'");
     expect(index).to.contain("import('./helper')");
 

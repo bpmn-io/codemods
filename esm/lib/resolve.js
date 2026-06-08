@@ -72,6 +72,11 @@ export function resolveImport(specifier, fromFile, options = {}) {
     return { status: 'skip', specifier };
   }
 
+  // bare subpath covered by package.json exports → already valid for ESM
+  if (bare && isSubpathExported(specifier, fromFile)) {
+    return { status: 'skip', specifier };
+  }
+
   const rewritten = bare
     ? resolveBare(specifier, fromFile)
     : resolveRelative(specifier, fromFile);
@@ -200,4 +205,41 @@ function isDirectory(p) {
   } catch {
     return false;
   }
+}
+
+function readJson(filePath) {
+  try {
+    return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Returns true if the bare subpath import is declared in the package's
+ * `exports` field, meaning it is already valid for ESM and should not be
+ * rewritten.
+ */
+function isSubpathExported(specifier, fromFile) {
+  const { pkg, subpath } = parseBare(specifier);
+  if (!subpath) return false;
+
+  const pkgDir = findPackageDir(pkg, path.dirname(fromFile));
+  if (!pkgDir) return false;
+
+  const exports = readJson(path.join(pkgDir, 'package.json'))?.exports;
+  if (!exports || typeof exports !== 'object') return false;
+
+  const key = './' + subpath;
+
+  if (key in exports) return true;
+
+  for (const pattern of Object.keys(exports)) {
+    if (pattern.includes('*')) {
+      const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '(.*)');
+      if (new RegExp('^' + escaped + '$').test(key)) return true;
+    }
+  }
+
+  return false;
 }
