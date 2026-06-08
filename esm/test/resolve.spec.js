@@ -79,6 +79,32 @@ describe('resolve - resolveImport', function() {
   });
 
 
+  it('should rewrite a relative directory import to index.js', function() {
+
+    // given
+    // ./lib resolves to ./lib/index.js on disk
+
+    // when
+    const result = resolveImport('./lib', fromFile);
+
+    // then
+    expect(result).to.eql({ status: 'rewrite', specifier: './lib/index.js' });
+  });
+
+
+  it('should mark a directory with no index as unresolved', function() {
+
+    // given
+    // ./fixtures exists as a directory but has no index file
+
+    // when
+    const result = resolveImport('./fixtures', fromFile);
+
+    // then
+    expect(result).to.eql({ status: 'unresolved', specifier: './fixtures' });
+  });
+
+
   it('should mark a missing relative import as unresolved', function() {
 
     // when

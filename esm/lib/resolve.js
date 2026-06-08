@@ -86,7 +86,19 @@ export function resolveImport(specifier, fromFile, options = {}) {
 function resolveRelative(specifier, fromFile) {
   const base = path.resolve(path.dirname(fromFile), specifier);
 
-  return resolveCandidates(base, specifier, RELATIVE_CANDIDATES);
+  const direct = resolveCandidates(base, specifier, RELATIVE_CANDIDATES);
+  if (direct) return direct;
+
+  // directory import: specifier points to a directory, try <dir>/index.*
+  if (isDirectory(base)) {
+    return resolveCandidates(
+      path.join(base, 'index'),
+      specifier + '/index',
+      RELATIVE_CANDIDATES
+    );
+  }
+
+  return null;
 }
 
 function resolveBare(specifier, fromFile) {

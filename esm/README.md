@@ -52,11 +52,12 @@ For every `.js`, `.jsx`, `.mjs`, `.cjs`, `.ts` and `.tsx` file below the target
    - Relative and bare (`node_modules`) specifiers are both handled.
    - TypeScript / JSX sources are written with a `.js` specifier (NodeNext
      convention), even though the file on disk is `.ts`/`.tsx`.
+   - Relative directory imports are expanded to `<dir>/index.js` when an
+     `index` file exists in that directory (e.g. `./lib` → `./lib/index.js`).
 4. Specifiers that already carry an extension, and bare package roots
    (e.g. `diagram-js`, `react`), are left untouched.
-5. Anything that still cannot be resolved (e.g. a directory import that would
-   need `/index.js`, or a genuinely missing file) is **reported** for manual
-   review — never silently changed.
+5. Anything that still cannot be resolved (e.g. a genuinely missing file) is
+   **reported** for manual review — never silently changed.
 
 Only the source string is edited; surrounding formatting is preserved exactly.
 
@@ -74,5 +75,4 @@ By design, the mod does **not**:
 
 - rewrite `require()` calls,
 - rewrite dynamic imports with a non-literal argument (`import(name)`),
-- add `/index.js` for directory imports,
 - guess at unresolvable imports — these are reported instead.
